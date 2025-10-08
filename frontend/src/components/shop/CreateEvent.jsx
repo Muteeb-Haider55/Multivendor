@@ -51,7 +51,7 @@ const CreateEvent = () => {
       toast.success("Event Created SuccessFully");
       // window.location.reload();
     }
-  }, [dispatch, error, success]);
+  }, [dispatch, error]);
 
   const handleImageChange = (e) => {
     e.preventDefault();
@@ -77,6 +77,10 @@ const CreateEvent = () => {
     newForm.append("finish_date", endDate.toISOString());
 
     dispatch(createEvent(newForm));
+    if (success === true) {
+      toast.success("Event Created SuccessFully");
+      navigate("/dashboard");
+    }
   };
 
   return (

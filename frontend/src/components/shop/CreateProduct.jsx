@@ -20,6 +20,7 @@ const CreateProduct = () => {
   const [originalPrice, setOriginalPrice] = useState("");
   const [discountPrice, setDiscountPrice] = useState("");
   const [stock, setStock] = useState("");
+  console.log(seller);
   useEffect(() => {
     if (error) {
       toast.error(error);
@@ -45,10 +46,13 @@ const CreateProduct = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     const newForm = new FormData();
+
     images.forEach((image) => {
-      newForm.set("images", image);
+      newForm.append("images", image);
     });
+
     newForm.append("name", name);
     newForm.append("description", description);
     newForm.append("category", category);
@@ -57,19 +61,8 @@ const CreateProduct = () => {
     newForm.append("discountPrice", discountPrice);
     newForm.append("stock", stock);
     newForm.append("shopId", seller._id);
-    dispatch(
-      createProduct({
-        name,
-        description,
-        category,
-        tags,
-        originalPrice,
-        discountPrice,
-        stock,
-        shopId: seller._id,
-        images,
-      })
-    );
+
+    dispatch(createProduct(newForm));
     if (success) {
       toast.success("Product Created SuccessFully");
       window.location.reload();
