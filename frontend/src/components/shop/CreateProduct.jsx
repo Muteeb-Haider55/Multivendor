@@ -24,11 +24,6 @@ const CreateProduct = () => {
     if (error) {
       toast.error(error);
     }
-    if (success) {
-      toast.success("Product Created SuccessFully");
-
-      window.location.reload();
-    }
   }, [dispatch, error, success]);
 
   const handleImageChange = (e) => {
@@ -75,6 +70,11 @@ const CreateProduct = () => {
         images,
       })
     );
+    if (success) {
+      toast.success("Product Created SuccessFully");
+      window.location.reload();
+      navigate("/dashboard");
+    }
   };
 
   return (
