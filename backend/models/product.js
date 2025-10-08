@@ -50,10 +50,22 @@ const productSchema = new mongoose.Schema({
   ratings: {
     type: Number,
   },
+  // images: [
+  //   {
+  //     type: String,
+  //     required: [true, "selct ateast 1 product image"],
+  //   },
+  // ],
   images: [
     {
-      type: String,
-      required: [true, "selct ateast 1 product image"],
+      public_id: {
+        type: String,
+        required: true,
+      },
+      url: {
+        type: String,
+        required: true,
+      },
     },
   ],
   shopId: {

@@ -7,11 +7,12 @@ const Shop = require("../models/shop.js");
 const { upload } = require("../multer.js");
 const { isSeller, isAuthenticated, isAdmin } = require("../middlware/auth.js");
 const fs = require("fs");
+const cloudinary = require("cloudinary");
 const Order = require("../models/order.js");
 // Create Product
 router.post(
   "/create-product",
-  upload.array("images"),
+
   catchAsyncErrors(async (req, res, next) => {
     try {
       const shopId = req.body.shopId;
@@ -19,10 +20,29 @@ router.post(
       if (!shop) {
         return next(new ErrorHandler("Invaid shop id", 400));
       } else {
-        const files = req.files;
-        const imageUrls = files.map((file) => `${file.filename}`);
+        let images = [];
+
+        if (typeof req.body.images === "string") {
+          images.push(req.body.images);
+        } else {
+          images = req.body.images;
+        }
+
+        const imagesLinks = [];
+
+        for (let i = 0; i < images.length; i++) {
+          const result = await cloudinary.v2.uploader.upload(images[i], {
+            folder: "products",
+          });
+
+          imagesLinks.push({
+            public_id: result.public_id,
+            url: result.secure_url,
+          });
+        }
+
         const productData = req.body;
-        productData.images = imageUrls;
+        productData.images = imagesLinks;
         productData.shop = shop;
         const product = await Product.create(productData);
         res.status(201).json({
@@ -58,24 +78,20 @@ router.delete(
   isSeller,
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const productId = req.params.id;
-
-      const productData = await Product.findById(productId);
-      productData.images.forEach((imageUrl) => {
-        const filename = imageUrl;
-        const filePath = `uploads/${filename}`;
-
-        fs.unlink(filePath, (err) => {
-          if (err) {
-            console.log(err);
-          }
-        });
-      });
-      const product = await Product.findByIdAndDelete(productId);
+      const product = await Product.findByIdAndDelete(req.params.id);
 
       if (!product) {
         return next(new ErrorHandler("product not fount with this is", 500));
       }
+
+      for (let i = 0; 1 < product.images.length; i++) {
+        const result = await cloudinary.v2.uploader.destroy(
+          product.images[i].public_id
+        );
+      }
+
+      await product.remove();
+
       res.status(201).json({
         success: true,
         message: "Product deleted Successfully",
