@@ -3,7 +3,6 @@ import Header from "../components/Layout/Header";
 import EventCard from "../components/Route/Events/EventCard";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllEvents } from "../redux/actions/event";
-import ProductCard from "../components/Route/ProductCard/ProductCard";
 
 const EvetsPage = () => {
   const { allEvents, isLoading } = useSelector((state) => state.events);
@@ -11,7 +10,7 @@ const EvetsPage = () => {
   useEffect(() => {
     dispatch(getAllEvents());
   }, [dispatch]);
-  const [data, setData] = useState([]);
+
   return (
     <>
       <Header activeHeading={4} />
