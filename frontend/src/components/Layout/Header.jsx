@@ -101,25 +101,12 @@ const Header = ({ activeHeading }) => {
             ) : null}
           </div>
           <div className={`${styles.button} bg-green-500  !rounded-[4px]`}>
-            {isSeller ? (
-              <Link to="/dashboard">
-                <div className={`${styles.button} m-auto !rounded-[4px]`}>
-                  <h1 className=" text-[#fff] flex items-center">
-                    Go DashBoard
-                    <IoIosArrowForward className="ml-1" />
-                  </h1>
-                </div>
-              </Link>
-            ) : (
-              <Link to="/shop-create">
-                <div className={`${styles.button} m-auto !rounded-[4px]`}>
-                  <h1 className=" text-[#fff] flex items-center">
-                    Become Seller
-                    <IoIosArrowForward className="ml-1" />
-                  </h1>
-                </div>
-              </Link>
-            )}
+            <Link to={`${isSeller ? "/dashboard" : "/shop-create"}`}>
+              <h1 className=" flex items-center text-[#fff]">
+                {isSeller ? "Go Dashboard" : "Become Seller"}
+                <IoIosArrowForward className="ml-1" />
+              </h1>
+            </Link>
           </div>
         </div>
       </div>
@@ -211,7 +198,10 @@ const Header = ({ activeHeading }) => {
       {/* Mobile Header */}
       <div className=" w-full h-[60px] fixed bg-[#fff] z-50 top-0 left-0 shadow-sm 800px:hidden">
         <div className=" w-full flex items-center justify-between">
-          <div className=" relative ml-4">
+          <div
+            className=" relative ml-4 cursor-pointer"
+            onClick={() => setOpenCart(true)}
+          >
             <AiOutlineShoppingCart size={30} />
             <span className=" absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 p-0 m-0 text-white font-nano text-[12px] leading-tight text-center">
               {cart && cart.length}
@@ -227,6 +217,10 @@ const Header = ({ activeHeading }) => {
               />
             </Link>
           </div>
+          {/* cart popup */}
+          {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
+          {/* wishlist popup */}
+          {openWishlist ? <Wishlist setOpenWishlist={setOpenWishlist} /> : null}
           <div className="">
             <BiMenuAltRight
               size={40}
@@ -241,10 +235,13 @@ const Header = ({ activeHeading }) => {
           <div className=" fixed  w-full bg-[#0000005f] z-20 h-full top-0 right-0">
             <div className=" fixed w-[60%] h-screen top-0 right-0 z-10 bg-white overflow-y-scroll">
               <div className=" w-full justify-between flex pr-3">
-                <div className=" relative mr-[15px]">
+                <div
+                  className=" relative mr-[15px]"
+                  onClick={() => setOpen(false) || setOpenWishlist(true)}
+                >
                   <AiOutlineHeart className=" mt-5 ml-3" size={30} />{" "}
                   <span className=" absolute right-0 top-5 rounded-full bg-[#3bc177] w-4 h-4 p-0 m-0 text-white font-nano text-[12px] leading-tight text-center">
-                    0
+                    {wishlist && wishlist.length}
                   </span>
                 </div>
 

@@ -5,7 +5,7 @@ const catchAsyncErrors = require("../middlware/catchAsyncErrors.js");
 const ErrorHandler = require("../utils/ErrorHandler.js");
 const Shop = require("../models/shop.js");
 const { upload } = require("../multer.js");
-const { isSeller, isAuthenticated } = require("../middlware/auth.js");
+const { isSeller, isAuthenticated, isAdmin } = require("../middlware/auth.js");
 const fs = require("fs");
 const Order = require("../models/order.js");
 // Create Product
@@ -102,7 +102,7 @@ router.get(
     }
   })
 );
-// review fro a product
+// review from a product
 router.put(
   "/create-new-review",
   isAuthenticated,
@@ -149,6 +149,24 @@ router.put(
       });
     } catch (error) {
       return next(new ErrorHandler(error, 400));
+    }
+  })
+);
+
+// All products for admin
+router.get(
+  "/admin-all-products",
+  isAuthenticated,
+  isAdmin("admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const products = await Product.find().sort({ createdAt: -1 });
+      res.status(201).json({
+        success: true,
+        products,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
     }
   })
 );

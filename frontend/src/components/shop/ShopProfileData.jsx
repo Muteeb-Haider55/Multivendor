@@ -18,11 +18,12 @@ const ShopProfileData = ({ isOwner }) => {
   const [active, setActive] = useState(1);
   useEffect(() => {
     dispatch(getAllProductsShop(id));
-    dispatch(getAllEventsShop(seller._id));
+    dispatch(getAllEventsShop(id));
   }, [dispatch]);
+  console.log(events);
   const allReviews =
     products && products.map((product) => product.reviews).flat();
-  console.log(events);
+
   return (
     <div className=" w-full ">
       <div className=" w-full flex items-center justify-between ">

@@ -5,7 +5,8 @@ const catchAsyncErrors = require("../middlware/catchAsyncErrors.js");
 const ErrorHandler = require("../utils/ErrorHandler.js");
 const Shop = require("../models/shop.js");
 const { upload } = require("../multer.js");
-const { isSeller } = require("../middlware/auth.js");
+const { isSeller, isAuthenticated, isAdmin } = require("../middlware/auth.js");
+
 const Event = require("../models/event.js");
 const fs = require("fs");
 // Create Event
@@ -55,7 +56,7 @@ router.get(
 // Delete product of a shop
 router.delete(
   "/delete-shop-event/:id",
-  isSeller,
+
   catchAsyncErrors(async (req, res, next) => {
     try {
       const eventId = req.params.id;
@@ -97,6 +98,24 @@ router.get(
       });
     } catch (error) {
       return next(new ErrorHandler(error, 400));
+    }
+  })
+);
+
+// All events for admin
+router.get(
+  "/admin-all-events",
+  isAuthenticated,
+  isAdmin("admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const events = await Event.find().sort({ createdAt: -1 });
+      res.status(201).json({
+        success: true,
+        events,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
     }
   })
 );

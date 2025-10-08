@@ -8,12 +8,13 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { BiShoppingBag } from "react-icons/bi";
 import { HiReceiptRefund } from "react-icons/hi";
 import { RxPerson } from "react-icons/rx";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MdOutlineTrackChanges } from "react-icons/md";
 import { TbAddressBook } from "react-icons/tb";
 import axios from "axios";
 import { server } from "../../../server";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 const ProfileSidebar = ({ active, setActive }) => {
   const navigate = useNavigate();
   const logoutHandler = () => {
@@ -28,6 +29,7 @@ const ProfileSidebar = ({ active, setActive }) => {
         toast.error(error.response.data.message);
       });
   };
+  const { user } = useSelector((state) => state.user);
   return (
     <div className=" w-full bg-white shadow-sm rounded-[10px] p-4 pt-8">
       <div
@@ -123,15 +125,31 @@ const ProfileSidebar = ({ active, setActive }) => {
           Address
         </span>
       </div>
-
+      {user && user.role === "admin" && (
+        <Link to={`/admin/dashboard`}>
+          <div
+            className=" flex items-center cursor-pointer w-full mb-8 "
+            onClick={() => setActive(8)}
+          >
+            <AiOutlineLogout size={20} color={active === 8 ? "red" : ""} />
+            <span
+              className={` pl-3 ${
+                active === 8 ? "text-[red]" : ""
+              } 800px:block hidden`}
+            >
+              Admin Dashboard
+            </span>
+          </div>
+        </Link>
+      )}
       <div
         className=" flex items-center cursor-pointer w-full mb-8 "
-        onClick={() => setActive(8) || logoutHandler()}
+        onClick={() => setActive(9) || logoutHandler()}
       >
         <AiOutlineLogout size={20} color={active === 8 ? "red" : ""} />
         <span
           className={` pl-3 ${
-            active === 8 ? "text-[red]" : ""
+            active === 9 ? "text-[red]" : ""
           } 800px:block hidden`}
         >
           Log out

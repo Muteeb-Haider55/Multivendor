@@ -15,27 +15,13 @@ const DashboardHero = () => {
   const { orders } = useSelector((state) => state.orders);
   const { seller } = useSelector((state) => state.seller);
   const { products } = useSelector((state) => state.product);
-  const [deliveredOrders, setDeliveredOrders] = useState();
+
   useEffect(() => {
     dispatch(getAllOrderOfShop(seller._id));
     dispatch(getAllProductsShop(seller._id));
   }, [dispatch, seller._id]);
-  useEffect(() => {
-    if (orders) {
-      const orderData =
-        orders && orders.filter((item) => item.status === "Delivered");
-      setDeliveredOrders(orderData);
-    }
-  }, [orders]);
-  console.log(deliveredOrders);
-  const totalEarningWithoutTax =
-    deliveredOrders &&
-    deliveredOrders.reduce((acc, item) => acc + item.totalPrice, 0);
 
-  const serviceCharges = totalEarningWithoutTax * 0.1;
-
-  const availableBalance = totalEarningWithoutTax - serviceCharges.toFixed(2);
-
+  const availableBalance = seller?.availableBalance;
   const columns = [
     { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
 
@@ -97,7 +83,7 @@ const DashboardHero = () => {
     });
   return (
     <div className=" w-full p-8 ">
-      <h3 className="font-Poppins text-[22apx] pb-1 ">Overview</h3>
+      <h3 className="font-Poppins text-[22px] pb-1 ">Overview</h3>
       <div className="w-full block 800px:flex items-center justify-between">
         <div className=" w-full mb-4 800px:w-[30%] min-h-[20vh] bg-white shadow rounded px-2 py-5">
           <div className="flex items-center">

@@ -4,18 +4,19 @@ const express = require("express");
 const ErrorHandler = require("../utils/ErrorHandler.js");
 const { isAuthenticated } = require("../middlware/auth.js");
 const { upload } = require("../multer.js");
+const Conversation = require("../models/conversation.js");
 const router = express.Router();
 
 // Create new message
 router.post(
   "/create-new-message",
-  upload.array("images"),
+  upload.single("images"),
   catchAsyncErrors(async (req, res, next) => {
     try {
       const messageData = req.body;
-      if (req.files) {
-        const files = req.files;
-        const imageUrls = files.map((file) => `${file.fileName}`);
+      if (req.file) {
+        const file = req.file;
+        const imageUrls = req.file.filename;
 
         messageData.images = imageUrls;
       }
@@ -26,7 +27,7 @@ router.post(
       const message = new Messages({
         conversationId: messageData.conversationId,
         sender: messageData.sender,
-        images: messageData.images ? messageData.images : [],
+        images: messageData.images ? messageData.images : "",
         text: messageData.text,
       });
 
@@ -41,4 +42,24 @@ router.post(
     }
   })
 );
+
+// Get all messages with conversation id
+
+router.get(
+  "/get-all-messages/:id",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const messages = await Messages.find({
+        conversationId: req.params.id,
+      });
+      res.status(201).json({
+        success: true,
+        messages,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
 module.exports = router;

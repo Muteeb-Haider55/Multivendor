@@ -11,7 +11,7 @@ const BestSellingPage = () => {
   const [data, setData] = useState([]);
   useEffect(() => {
     const d =
-      allProducts && [...allProducts].sort((a, b) => a.sold_out - b.sold_out);
+      allProducts && [...allProducts].sort((a, b) => b.sold_out - a.sold_out);
     setData(d);
     // window.scrollTo(0, 0);
   }, []);

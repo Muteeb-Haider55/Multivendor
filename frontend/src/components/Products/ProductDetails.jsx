@@ -88,7 +88,6 @@ const ProductDetails = ({ data }) => {
   const averageRating = totalRatings / totalReviewsLength || 0;
 
   const handleMessageSubmit = async () => {
-    console.log(isAuthenticated);
     if (isAuthenticated) {
       const groupTitle = data._id + user._id;
       const userId = user._id;
@@ -104,7 +103,7 @@ const ProductDetails = ({ data }) => {
           { withCredentials: true }
         )
         .then((res) => {
-          navigate(`/conversation/${res.data.conversation._id}`);
+          navigate(`/inbox?${res.data.conversation._id}`);
         })
         .catch((error) => {
           toast.error(error.response.data.message);
@@ -304,10 +303,10 @@ const ProductDetailsInfo = ({
           </p>
         </>
       ) : null}
-      {active === 2 ? (
+      {active === 2 && (
         <div className=" w-full  flex flex-col items-center min-h-[40vh] overflow-y-scroll  py-3">
           {data &&
-            data.reviews.map((item, index) => (
+            data?.reviews?.map((item, index) => (
               <div className=" w-full flex my-2">
                 <img
                   src={`${backend_url}/${item.user.avatar}`}
@@ -329,7 +328,7 @@ const ProductDetailsInfo = ({
             )}
           </div>
         </div>
-      ) : null}
+      )}
       {active === 3 ? (
         <div className=" w-full block 800px:flex p-5">
           <div className=" w-full 800px:w-[50%]">
@@ -368,7 +367,7 @@ const ProductDetailsInfo = ({
                 Total Reviews:{" "}
                 <span className=" font-[500]">{totalReviewsLength}</span>
               </h5>
-              <Link to="/">
+              <Link to={`/shop/preview/${data?.shop._id}`}>
                 <div
                   className={`${styles.button} !rounded-[4px] !h-[39.5px] mt-3`}
                 >

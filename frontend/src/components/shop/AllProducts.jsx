@@ -34,11 +34,10 @@ const AllProducts = () => {
       type: "number",
       sortable: false,
       renderCell: (params) => {
-        const d = params.row.name;
-        const product_name = d.replace(/\s+/g, "_");
+        // const product_name = d.replace(/\s+/g, "_");
         return (
           <>
-            <Link to={`/product/${product_name}`}>
+            <Link to={`/products/${params.id}`}>
               <Button>
                 <AiOutlineEye size={20} />
               </Button>

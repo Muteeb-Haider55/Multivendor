@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const withdraw = require("./withdraw");
 
 const shopSchema = new mongoose.Schema({
   name: {
@@ -37,6 +38,32 @@ const shopSchema = new mongoose.Schema({
     minLength: [6, "Password must be greater then 6 character"],
     select: false,
   },
+  withdrawMethods: {
+    type: Object,
+  },
+  availableBalance: {
+    type: Number,
+    default: 0,
+  },
+  transections: [
+    {
+      amount: {
+        type: Number,
+        required: true,
+      },
+      status: {
+        type: String,
+        default: "Processing",
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now(),
+      },
+      updatedAt: {
+        type: Date,
+      },
+    },
+  ],
   role: {
     type: String,
     default: "Seller",

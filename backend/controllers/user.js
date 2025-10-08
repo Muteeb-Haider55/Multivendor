@@ -8,7 +8,7 @@ const fs = require("fs");
 const sendMail = require("../utils/sendMail.js");
 const catchAsyncErrors = require("../middlware/catchAsyncErrors.js");
 const sendToken = require("../utils/jwtToken.js");
-const { isAuthenticated } = require("../middlware/auth.js");
+const { isAuthenticated, isAdmin } = require("../middlware/auth.js");
 
 const router = express.Router();
 router.post("/create-user", upload.single("file"), async (req, res, next) => {
@@ -305,4 +305,62 @@ router.put(
     }
   })
 );
+
+// find user info wit id
+router.get(
+  "/user-info/:id",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.params.id);
+      res.status(201).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// All users for admin
+router.get(
+  "/admin-all-users",
+  isAuthenticated,
+  isAdmin("admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const users = await User.find().sort({ createdAt: -1 });
+      res.status(201).json({
+        success: true,
+        users,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// delete user by admin
+router.delete(
+  "/delete-user/:id",
+  isAuthenticated,
+  isAdmin("admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.params.id);
+      if (!user) {
+        return next(new ErrorHandler("User not found", 400));
+      } else {
+        await User.findByIdAndDelete(req.params.id);
+        res.status(201).json({
+          success: true,
+          message: "User deleted SuccessFully",
+        });
+      }
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
 module.exports = router;

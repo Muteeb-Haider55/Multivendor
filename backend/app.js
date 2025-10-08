@@ -14,21 +14,15 @@ app.use(
   })
 );
 app.use("/", express.static("uploads"));
+app.use("/", (req, res) => {
+  res.send("Hello world");
+});
 app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
-
-// Add test route before creating server
-// app.get("/api/test", (req, res) => {
-//   res.status(200).json({
-//     success: true,
-//     message: "API is working!",
-//     timestamp: new Date().toISOString(),
-//   });
-// });
 
 //config
 if (process.env.NODE_ENV !== "PRODUCTION") {
   require("dotenv").config({
-    path: "backend/config/.env",
+    path: "config/.env",
   });
 }
 
@@ -42,6 +36,7 @@ const payment = require("./controllers/payment.js");
 const order = require("./controllers/order.js");
 const conversation = require("./controllers/conversation.js");
 const message = require("./controllers/messages.js");
+const withdraw = require("./controllers/withdraw.js");
 
 app.use("/api/v2/user", user);
 app.use("/api/v2/shop", shop);
@@ -52,6 +47,7 @@ app.use("/api/v2/payment", payment);
 app.use("/api/v2/order", order);
 app.use("/api/v2/conversation", conversation);
 app.use("/api/v2/message", message);
+app.use("/api/v2/withdraw", withdraw);
 
 //it's for error handling
 app.use(ErrorHandler);

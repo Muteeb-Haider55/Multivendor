@@ -20,6 +20,7 @@ import {
   ShopLoginPage,
   OrderDetailsPage,
   TrackOrderPage,
+  UserInbox,
 } from "../src/routes/Routes.js";
 import {
   ShopHomePage,
@@ -38,6 +39,15 @@ import {
   ShopInboxPage,
 } from "./routes/ShopRoutes.js";
 
+import {
+  AdminDashboardPage,
+  AdminDashboardUsers,
+  AdminSellersPage,
+  AdminDashoardOrdersPage,
+  AdminDashboardEventsPage,
+  AdminDashboardProductsPage,
+  AdminWithDrawRequest,
+} from "./routes/AdminRoutes.js";
 import { ToastContainer } from "react-toastify";
 import { useEffect } from "react";
 import Store from "./redux/store.js";
@@ -51,6 +61,7 @@ import axios from "axios";
 import { server } from "../server.js";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import AdminProtectedRoute from "./protectedRoutes/AdminProtectedRoute.jsx";
 
 const App = () => {
   const [stripeApiKey, setStripeApiKey] = useState("");
@@ -85,6 +96,7 @@ const App = () => {
           </Elements>
         )}
         <Routes>
+          {/* User Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignupPage />} />
@@ -129,6 +141,14 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <TrackOrderPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/inbox"
+            element={
+              <ProtectedRoute>
+                <UserInbox />
               </ProtectedRoute>
             }
           />
@@ -250,6 +270,65 @@ const App = () => {
               <SellerProtectedRoute>
                 <ShopInboxPage />
               </SellerProtectedRoute>
+            }
+          />
+          {/* Admin Routes */}
+
+          <Route
+            path="/admin/dashboard"
+            element={
+              <AdminProtectedRoute>
+                <AdminDashboardPage />
+              </AdminProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin-users"
+            element={
+              <AdminProtectedRoute>
+                <AdminDashboardUsers />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin-sellers"
+            element={
+              <AdminProtectedRoute>
+                <AdminSellersPage />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin-orders"
+            element={
+              <AdminProtectedRoute>
+                <AdminDashoardOrdersPage />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin-products"
+            element={
+              <AdminProtectedRoute>
+                <AdminDashboardProductsPage />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin-events"
+            element={
+              <AdminProtectedRoute>
+                <AdminDashboardEventsPage />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin-withdraw-request"
+            element={
+              <AdminProtectedRoute>
+                <AdminWithDrawRequest />
+              </AdminProtectedRoute>
             }
           />
         </Routes>

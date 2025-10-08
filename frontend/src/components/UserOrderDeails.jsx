@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { BsFillBagFill } from "react-icons/bs";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "../styles/styles";
 import { backend_url, server } from "../../server";
@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 
 const UserOrderDeails = () => {
   const { orders } = useSelector((state) => state.orders);
-  const { user } = useSelector((state) => state.user);
+  const { user, isAuthenticated } = useSelector((state) => state.user);
 
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
@@ -22,6 +22,7 @@ const UserOrderDeails = () => {
 
   const [rating, setRating] = useState(1);
   const { id } = useParams();
+  const navigate = useNavigate();
   useEffect(() => {
     dispatch(getAllOrderOfUser(user._id));
   }, [dispatch]);
@@ -66,6 +67,31 @@ const UserOrderDeails = () => {
         toast.error(error.res.data.message);
       });
   };
+  // const handleMessageSubmit = async () => {
+  //   if (isAuthenticated) {
+  //     const groupTitle = data?._id + user._id;
+  //     const userId = user._id;
+  //     const sellerId = data?.shop._id;
+  //     axios
+  //       .post(
+  //         `${server}/conversation/create-new-conversation`,
+  //         {
+  //           groupTitle,
+  //           userId,
+  //           sellerId,
+  //         },
+  //         { withCredentials: true }
+  //       )
+  //       .then((res) => {
+  //         navigate(`/inbox?${res.data.conversation._id}`);
+  //       })
+  //       .catch((error) => {
+  //         toast.error(error.response.data.message);
+  //       });
+  //   } else {
+  //     toast.error("Please login to create conversation");
+  //   }
+  // };
   return (
     <div className={`${styles.section}`}>
       <div className=" w-full flex items-center justify-between">
@@ -231,11 +257,7 @@ const UserOrderDeails = () => {
           )}
         </div>
       </div>
-      <Link to="/">
-        <div className={`${styles.button} !rounded-[4px] text-white`}>
-          Send Message
-        </div>
-      </Link>
+
       <br />
 
       <br />

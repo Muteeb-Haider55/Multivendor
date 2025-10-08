@@ -5,7 +5,7 @@ const fs = require("fs");
 const jwt = require("jsonwebtoken");
 const sendMail = require("../utils/sendMail.js");
 const sendToken = require("../utils/jwtToken.js");
-const { isAuthenticated, isSeller } = require("../middlware/auth.js");
+const { isAuthenticated, isSeller, isAdmin } = require("../middlware/auth.js");
 const { upload } = require("../multer.js");
 const ErrorHandler = require("../utils/ErrorHandler.js");
 const Shop = require("../models/shop.js");
@@ -233,4 +233,85 @@ router.put(
     }
   })
 );
+
+// All sellers for admin
+router.get(
+  "/admin-all-sellers",
+  isAuthenticated,
+  isAdmin("admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const sellers = await Shop.find().sort({ createdAt: -1 });
+      res.status(201).json({
+        success: true,
+        sellers,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// delete seller by admin
+router.delete(
+  "/delete-seller/:id",
+  isAuthenticated,
+  isAdmin("admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const seller = await Shop.findById(req.params.id);
+      if (!seller) {
+        return next(new ErrorHandler("Seller not found", 400));
+      } else {
+        await Shop.findByIdAndDelete(req.params.id);
+        res.status(201).json({
+          success: true,
+          message: "Seller deleted SuccessFully",
+        });
+      }
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+//  seller withdraw methods
+router.put(
+  "/update-payment-methods",
+  isSeller,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { withdrawMethods } = req.body;
+      const seller = await Shop.findByIdAndUpdate(req.seller._id, {
+        withdrawMethods,
+      });
+      res.status(201).json({
+        success: true,
+        seller,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// delete seller withdraw method
+router.delete(
+  "/delete-withdraw-method",
+  isSeller,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const seller = await Shop.findByIdAndUpdate(req.seller._id, {
+        withdrawMethods: null,
+      });
+      res.status(201).json({
+        success: true,
+        seller,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
 module.exports = router;

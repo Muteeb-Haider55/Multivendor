@@ -12,16 +12,16 @@ const Events = () => {
   console.log(allEvents);
   return (
     <div>
-      {!isLoading && (
+      {!isLoading && allEvents.length !== 0 ? (
         <div className={`${styles.section}`}>
           <div className={`${styles.heading}`}>
             <h1>Popular Events</h1>
           </div>
           <div className=" w-full grid">
-            <EventCard data={allEvents && allEvents[3]} />
+            {allEvents && <EventCard data={allEvents && allEvents[0]} />}{" "}
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 };

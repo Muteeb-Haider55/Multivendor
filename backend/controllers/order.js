@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 const catchAsyncErrors = require("../middlware/catchAsyncErrors.js");
 const ErrorHandler = require("../utils/ErrorHandler.js");
-const { isAuthenticated, isSeller } = require("../middlware/auth.js");
+const { isAuthenticated, isSeller, isAdmin } = require("../middlware/auth.js");
 const Order = require("../models/order");
 const Product = require("../models/product.js");
+const Shop = require("../models/shop.js");
 
 // create new order
 router.post(
@@ -142,6 +143,8 @@ router.put(
       if (req.body.status === "Delivered") {
         order.deliveredAt = Date.now();
         order.paymentInfo.status = "Succeeded";
+        const serviceCharge = order.totalPrice * 0.1;
+        await updateSellerInfo(order.totalPrice - serviceCharge);
       }
 
       await order.save({ validateBeforeSave: false });
@@ -158,6 +161,11 @@ router.put(
         product.sold_out += qty;
 
         await product.save({ validateBeforeSave: false });
+      }
+      async function updateSellerInfo(amount) {
+        const seller = await Shop.findById(req.seller._id);
+        seller.availableBalance = amount;
+        await seller.save();
       }
     } catch (error) {
       return next(new ErrorHandler(error.message, 400));
@@ -190,7 +198,7 @@ router.put(
 );
 // accept the refund ===seller
 router.put(
-  "order-refund-success/:id",
+  "/order-refund-success/:id",
   isSeller,
   catchAsyncErrors(async (req, res, next) => {
     try {
@@ -219,6 +227,24 @@ router.put(
 
         await product.save({ validateBeforeSave: false });
       }
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// All order for admin
+router.get(
+  "/admin-all-orders",
+  isAuthenticated,
+  isAdmin("admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const orders = await Order.find().sort({ createdAt: -1 });
+      res.status(201).json({
+        success: true,
+        orders,
+      });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
