@@ -1,3 +1,4 @@
+import { validateProps } from "@mui/x-data-grid/internals";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -20,39 +21,28 @@ const CreateProduct = () => {
   const [originalPrice, setOriginalPrice] = useState("");
   const [discountPrice, setDiscountPrice] = useState("");
   const [stock, setStock] = useState("");
-  console.log(seller);
   useEffect(() => {
     if (error) {
       toast.error(error);
     }
+    if (success) {
+      toast.success("Product Created SuccessFully");
+
+      window.location.reload();
+    }
   }, [dispatch, error, success]);
 
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-
-    setImages([]);
-
-    files.forEach((file) => {
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          setImages((old) => [...old, reader.result]);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
+    e.preventDefault();
+    let files = Array.from(e.target.files);
+    setImages((prevImages) => [...prevImages, ...files]);
   };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const newForm = new FormData();
-
     images.forEach((image) => {
       newForm.append("images", image);
     });
-
     newForm.append("name", name);
     newForm.append("description", description);
     newForm.append("category", category);
@@ -61,13 +51,7 @@ const CreateProduct = () => {
     newForm.append("discountPrice", discountPrice);
     newForm.append("stock", stock);
     newForm.append("shopId", seller._id);
-
     dispatch(createProduct(newForm));
-    if (success) {
-      toast.success("Product Created SuccessFully");
-      window.location.reload();
-      navigate("/dashboard");
-    }
   };
 
   return (
@@ -185,19 +169,19 @@ const CreateProduct = () => {
           </label>
           <input
             type="file"
-            id="upload"
+            id="uplaod"
             className="hidden"
             multiple
             onChange={handleImageChange}
           />
           <div className=" w-full flex items-center flex-wrap">
-            <label htmlFor="upload">
+            <label htmlFor="uplaod">
               <AiOutlinePlusCircle size={30} className="mt-3" color="#555" />
             </label>
             {images &&
               images.map((i) => (
                 <img
-                  src={i}
+                  src={URL.createObjectURL(i)}
                   key={i}
                   alt=""
                   className="h-[120px] w-[120px] object-cover m-2"

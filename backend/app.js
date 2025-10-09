@@ -8,7 +8,7 @@ const path = require("path");
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+
 app.use(
   cors({
     origin: "https://shopmesh.vercel.app",
